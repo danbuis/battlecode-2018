@@ -1,16 +1,17 @@
 // import the API.
 // See xxx for the javadocs.
+import java.util.HashMap;
 import java.util.Map;
 
 import bc.*;
 
 public class Player {
-	/*Map of NavigationManagers for bots.  NavigationManagers are accessed via their 
+	/*Map of NavigationManagers for units.  NavigationManagers are accessed via their 
 	 * ID.  Opted for a map instead of an array list since it won't
 	 * accept repeat values, and we won't have to deal with updating
-	 * bots as they die.
+	 * units as they die.
 	 */
-	public static Map<K, V> navigationManagers = new HashMap();
+	public static Map<Integer, NavigationManager> navigationManagers = new HashMap<Integer, NavigationManager>();
 	
     public static void main(String[] args) {
         // MapLocation is a data structure you'll use a lot.
@@ -24,14 +25,12 @@ public class Player {
 
         // Connect to the manager, starting the game
         GameController gc = new GameController();
-
-        // Direction is a normal java enum.
-        Direction[] directions = Direction.values();
         
+        //initializing player
         initPlayer(gc);
 
         while (true) {
-            //System.out.println("Current round: "+gc.round());
+            System.out.println("Current round: "+gc.round());
             // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
             VecUnit units = gc.myUnits();
             for (int i = 0; i < units.size(); i++) {
@@ -53,10 +52,11 @@ public class Player {
         for (int i = 0; i < units.size(); i++) {
             Unit unit = units.get(i);
             NavigationManager temp = new NavigationManager(gc, unit);
-            temp.setTargetLocation(new MapLocation(Planet.Earth, 5,5));
+            MapLocation targetLoc= new MapLocation(Planet.Earth, 10,5);
+            temp.setTargetLocation(targetLoc);
             
             //                      key           value
-            NavigationManagers.put(unit.id(), new NavigationManager(gc, unit));
+            navigationManagers.put(unit.id(), new NavigationManager(gc, unit));
             System.out.println("added unit to NavigationManager map");
         }
         

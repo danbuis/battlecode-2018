@@ -1,4 +1,3 @@
-package iceland_v1;
 // import the API.
 // See xxx for the javadocs.
 import java.util.HashMap;
@@ -27,10 +26,11 @@ public class Player {
         // Connect to the manager, starting the game
         GameController gc = new GameController();
         
+        //initializing player
         initPlayer(gc);
 
         while (true) {
-            //System.out.println("Current round: "+gc.round());
+            System.out.println("Current round: "+gc.round());
             // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
             VecUnit units = gc.myUnits();
             for (int i = 0; i < units.size(); i++) {
@@ -52,7 +52,8 @@ public class Player {
         for (int i = 0; i < units.size(); i++) {
             Unit unit = units.get(i);
             NavigationManager temp = new NavigationManager(gc, unit);
-            temp.setTargetLocation(new MapLocation(Planet.Earth, 5,5));
+            MapLocation targetLoc= new MapLocation(Planet.Earth, 10,5);
+            temp.setTargetLocation(targetLoc);
             
             //                      key           value
             navigationManagers.put(unit.id(), new NavigationManager(gc, unit));

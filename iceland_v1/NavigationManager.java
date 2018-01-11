@@ -1,5 +1,3 @@
-package iceland_v1;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class NavigationManager {
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
 	//target MapLocation.  Parent gameController can set it whenever it needs to.
-	private MapLocation targetLocation=null;
+	private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
 	
 	// does what it says on the box.  
 	private boolean atTargetLocation;
@@ -41,7 +39,11 @@ public class NavigationManager {
 	 */
 	public void navigate(){
 		System.out.println("Navigating with unit "+unit.id());
+		MapLocation currentLoc = unit.location().mapLocation();
+		System.out.println("currently at "+currentLoc.getX()+","+currentLoc.getY());
+		System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
 		if(!atTargetLocation && targetLocation!=null){
+			System.out.println("callingNavToPoint()");
 			navToPoint();
 		}
 	}
@@ -63,27 +65,44 @@ public class NavigationManager {
 		long temp;
 		Direction closestDirection=null;
 		int unitID = unit.id();
+		int i=1;
 		
-		//first find the direction that moves us closer to the target
-		for(Direction dir : Direction.values()){
-			locationToTest=currentLocation.add(dir);
-			//make sure it is on the map and is passable
-			if(gc.canMove(unitID, dir)){
-				//make sure the location hasn't already been visited
-				if(!pastLocations.contains(locationToTest)){
-					//at this point its a valid location to test, check its distance
-					temp = locationToTest.distanceSquaredTo(targetLocation);
-					if (temp<smallestDist){
-						smallestDist=temp;
-						closestDirection=dir;
+		if(gc.isMoveReady(unitID)){
+			//first find the direction that moves us closer to the target
+			for(Direction dir : Direction.values()){
+				System.out.println("this ("+dir.name()+") is the "+i+"th direction to check, should get to 9");
+				locationToTest=currentLocation.add(dir);
+				//make sure it is on the map and is passable
+				System.out.println("testing this location: "+locationToTest);
+				System.out.println("valid move? "+gc.canMove(unitID, dir));
+				if(gc.canMove(unitID, dir)){
+					System.out.println("we can indeed move there...");
+					//make sure the location hasn't already been visited
+					if(!pastLocations.contains(locationToTest)){
+						System.out.println("not been there recently...");
+						//at this point its a valid location to test, check its distance
+						temp = locationToTest.distanceSquaredTo(targetLocation);
+						System.out.println("distance :"+temp);
+						if (temp<smallestDist){
+							System.out.println("new closest!");
+							smallestDist=temp;
+							closestDirection=dir;
+						}
 					}
 				}
-			}
-		}//end of for-each loop
+			i++;
+			}//end of for-each loop
+		}//end move ready if
 		
 		//movement and maintenance
 		if(closestDirection!=null){
+			System.out.println("found a closest direction, calling navInDirection()");
+			System.out.println("heading "+closestDirection.name());
 			navInDirection(true, closestDirection);
+		}else{
+			//can't get any closer
+			System.out.println("can't get closer, erasing past locations");
+			pastLocations.clear();
 		}
 		
 		//have we arrived close enough?
@@ -91,6 +110,7 @@ public class NavigationManager {
 			accuracy = 2;
 			targetLocation = null;
 			atTargetLocation=true;
+			System.out.println("Unit "+unit.id()+" arrived at destination.");
 		}
 	}
 	
@@ -101,14 +121,17 @@ public class NavigationManager {
 	private void navInDirection(boolean prechecked, Direction direction){
 		boolean resultOfCheck = true;
 		if(!prechecked){
-			resultOfCheck = gc.canMove(unit.id(), direction);
+			resultOfCheck = gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction);
 		}
 		
 		if(resultOfCheck){
 			//add current location
 			pastLocations.add(unit.location().mapLocation());
 			//move
+			System.out.println("moving unit "+direction.name());
+			System.out.println("old location"+unit.location().mapLocation());
 			gc.moveRobot(unit.id(), direction);
+			System.out.println("moved unit, new location "+unit.location().mapLocation());
 			//get rid of oldest to maintain recent locations
 			if (pastLocations.size()>9)
 				pastLocations.remove(0);
