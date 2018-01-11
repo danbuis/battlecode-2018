@@ -1,16 +1,18 @@
+package iceland_v1;
 // import the API.
 // See xxx for the javadocs.
+import java.util.HashMap;
 import java.util.Map;
 
 import bc.*;
 
 public class Player {
-	/*Map of NavigationManagers for bots.  NavigationManagers are accessed via their 
+	/*Map of NavigationManagers for units.  NavigationManagers are accessed via their 
 	 * ID.  Opted for a map instead of an array list since it won't
 	 * accept repeat values, and we won't have to deal with updating
-	 * bots as they die.
+	 * units as they die.
 	 */
-	public static Map<K, V> navigationManagers = new HashMap();
+	public static Map<Integer, NavigationManager> navigationManagers = new HashMap<Integer, NavigationManager>();
 	
     public static void main(String[] args) {
         // MapLocation is a data structure you'll use a lot.
@@ -24,9 +26,6 @@ public class Player {
 
         // Connect to the manager, starting the game
         GameController gc = new GameController();
-
-        // Direction is a normal java enum.
-        Direction[] directions = Direction.values();
         
         initPlayer(gc);
 
@@ -56,7 +55,7 @@ public class Player {
             temp.setTargetLocation(new MapLocation(Planet.Earth, 5,5));
             
             //                      key           value
-            NavigationManagers.put(unit.id(), new NavigationManager(gc, unit));
+            navigationManagers.put(unit.id(), new NavigationManager(gc, unit));
             System.out.println("added unit to NavigationManager map");
         }
         
