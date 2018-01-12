@@ -57,7 +57,7 @@ public class ResearchManager {
 	public void updateResearchQueue() {
 		ResearchInfo currentResearch = gc.researchInfo();
 		if (currentResearch.roundsLeft() == 0) {
-			researchProgress[currentResearchType.swigValue()]++;
+			researchProgress[currentResearchType.ordinal()]++;
 			addNextResearch();
 		}
 
@@ -141,7 +141,7 @@ public class ResearchManager {
 					//find the next research in line
 					returnThis = queue.get(currentArr);								
 					//what position in the enum array is it
-					int tempArrIndex = returnThis.swigValue();
+					int tempArrIndex = returnThis.ordinal();
 					//if we haven't done too much research in that field, do it
 					if(researchProgress[tempArrIndex]<maxResearches[tempArrIndex]) {	
 						valid = true;
