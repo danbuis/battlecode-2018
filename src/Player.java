@@ -35,6 +35,14 @@ public class Player {
             VecUnit units = gc.myUnits();
             for (int i = 0; i < units.size(); i++) {
                 Unit unit = units.get(i);
+                
+                if(gc.round()==1){
+                	navigationManagers.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 10,5));
+                }
+                
+                if(gc.round()==300){
+                	navigationManagers.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 0,0));
+                }
 
                 NavigationManager test = navigationManagers.get(unit.id());
                 if(gc.isMoveReady(unit.id())){

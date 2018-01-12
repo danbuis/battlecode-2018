@@ -18,7 +18,8 @@ public class NavigationManager {
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
 	//target MapLocation.  Parent gameController can set it whenever it needs to.
-	private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
+	//private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
+	private MapLocation targetLocation=null;
 	
 	// does what it says on the box.  
 	private boolean atTargetLocation;

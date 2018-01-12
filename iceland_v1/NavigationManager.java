@@ -9,6 +9,8 @@ import bc.*;
  *
  */
 public class NavigationManager {
+	private boolean debug = false;
+	
 	//need access to game controller for basically everything
 	private GameController gc;
 	
@@ -16,7 +18,8 @@ public class NavigationManager {
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
 	//target MapLocation.  Parent gameController can set it whenever it needs to.
-	private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
+	//private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
+	private MapLocation targetLocation=null;
 	
 	// does what it says on the box.  
 	private boolean atTargetLocation;
@@ -35,12 +38,14 @@ public class NavigationManager {
 	 * @return 
 	 */
 	public Direction navigate(Unit unit){
-		System.out.println("Navigating with unit "+unit.id());
+		if (debug) System.out.println("Navigating with unit "+unit.id());
 		MapLocation currentLoc = unit.location().mapLocation();
-		System.out.println("currently at "+currentLoc);
-		System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
+		if(debug){
+			System.out.println("currently at "+currentLoc);
+			System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
+		}
 		if(!atTargetLocation && targetLocation!=null){
-			System.out.println("callingNavToPoint()");
+			if (debug) System.out.println("callingNavToPoint()");
 			return navToPoint(unit);
 		}
 		else return null;
@@ -69,21 +74,23 @@ public class NavigationManager {
 		if(gc.isMoveReady(unitID)){
 			//first find the direction that moves us closer to the target
 			for(Direction dir : Direction.values()){
-				System.out.println("this ("+dir.name()+") is the "+i+"th direction to check, should get to 9");
+				if (debug) System.out.println("this ("+dir.name()+") is the "+i+"th direction to check, should get to 9");
 				locationToTest=currentLocation.add(dir);
 				//make sure it is on the map and is passable
-				System.out.println("testing this location: "+locationToTest);
-				System.out.println("valid move? "+gc.canMove(unitID, dir));
+				if (debug){
+					System.out.println("testing this location: "+locationToTest);
+					System.out.println("valid move? "+gc.canMove(unitID, dir));
+				}
 				if(gc.canMove(unitID, dir)){
-					System.out.println("we can indeed move there...");
+					if (debug)System.out.println("we can indeed move there...");
 					//make sure the location hasn't already been visited
 					if(!pastLocations.contains(locationToTest)){
-						System.out.println("not been there recently...");
+						if (debug)System.out.println("not been there recently...");
 						//at this point its a valid location to test, check its distance
 						temp = locationToTest.distanceSquaredTo(targetLocation);
-						System.out.println("distance :"+temp);
+						if (debug)System.out.println("distance :"+temp);
 						if (temp<smallestDist){
-							System.out.println("new closest!");
+							if (debug)System.out.println("new closest!");
 							smallestDist=temp;
 							closestDirection=dir;
 						}
@@ -95,12 +102,14 @@ public class NavigationManager {
 		
 		//movement and maintenance
 		if(closestDirection!=null){
-			System.out.println("found a closest direction, calling navInDirection()");
-			System.out.println("heading "+closestDirection.name());
+			if (debug){
+				System.out.println("found a closest direction, calling navInDirection()");
+				System.out.println("heading "+closestDirection.name());
+			}
 			cleanUpAfterMove(unit);
 		}else{
 			//can't get any closer
-			System.out.println("can't get closer, erasing past locations");
+			if (debug) System.out.println("can't get closer, erasing past locations");
 			pastLocations.clear();
 		}
 		
@@ -109,7 +118,7 @@ public class NavigationManager {
 			accuracy = 2;
 			targetLocation = null;
 			atTargetLocation=true;
-			System.out.println("Unit "+unit.id()+" arrived at destination.");
+			if (debug) System.out.println("Unit "+unit.id()+" arrived at destination.");
 		}
 		
 		return closestDirection;
