@@ -8,7 +8,7 @@ import bc.*;
  * @author dbuis
  *
  */
-public class NavigationManager {
+public class BasicBot {
 	private boolean debug = false;
 	
 	//need access to game controller for basically everything
@@ -25,10 +25,10 @@ public class NavigationManager {
 	private boolean atTargetLocation;
 	
 	//how close do you need to be to the target location.  Reset to 2 upon arrival at a destination. This allows it to be at or adjacent to the target
-	private int accuracy = 2;
+	private int howCloseToDestination = 2;
 	
 	//general purpose constructor
-	public NavigationManager(GameController gc, Unit unit){
+	public BasicBot(GameController gc){
 		this.gc = gc;
 		atTargetLocation=false; //initialize variable
 	}
@@ -114,8 +114,8 @@ public class NavigationManager {
 		}
 		
 		//have we arrived close enough?
-		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=accuracy){
-			accuracy = 2;
+		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=howCloseToDestination){
+			howCloseToDestination = 2;
 			targetLocation = null;
 			atTargetLocation=true;
 			if (debug) System.out.println("Unit "+unit.id()+" arrived at destination.");

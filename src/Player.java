@@ -11,7 +11,7 @@ public class Player {
 	 * accept repeat values, and we won't have to deal with updating
 	 * units as they die.
 	 */
-	public static Map<Integer, NavigationManager> navigationManagers = new HashMap<Integer, NavigationManager>();
+	public static Map<Integer, BasicBot> basicBotMaps = new HashMap<Integer, BasicBot>();
 	
     public static void main(String[] args) {
         // MapLocation is a data structure you'll use a lot.
@@ -37,14 +37,14 @@ public class Player {
                 Unit unit = units.get(i);
                 
                 if(gc.round()==1){
-                	navigationManagers.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 10,5));
+                	basicBotMaps.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 10,5));
                 }
                 
                 if(gc.round()==300){
-                	navigationManagers.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 0,0));
+                	basicBotMaps.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 0,0));
                 }
 
-                NavigationManager test = navigationManagers.get(unit.id());
+                BasicBot test = basicBotMaps.get(unit.id());
                 if(gc.isMoveReady(unit.id())){
 	                Direction dir = test.navigate(unit);
 	                if(dir!=null){
@@ -118,12 +118,12 @@ public class Player {
     	VecUnit units = gc.myUnits();
         for (int i = 0; i < units.size(); i++) {
             Unit unit = units.get(i);
-            NavigationManager temp = new NavigationManager(gc, unit);
+            BasicBot temp = new BasicBot(gc, unit);
             MapLocation targetLoc= new MapLocation(Planet.Earth, 10,5);
             temp.setTargetLocation(targetLoc);
             
             //                      key           value
-            navigationManagers.put(unit.id(), new NavigationManager(gc, unit));
+            basicBotMaps.put(unit.id(), new BasicBot(gc, unit));
             System.out.println("added unit to NavigationManager map");
         }
         
