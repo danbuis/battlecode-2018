@@ -11,13 +11,15 @@ import java.util.ArrayList;
 
 public class ResearchManager {
 	private GameController gc;		//obligatory
-	protected ArrayList<ResearchBuildOrder> researchOrder = new ArrayList <ResearchBuildOrder>(); //the actual queue in use
-	int researchOrderProgress = 0;//position in the queue
+	protected ArrayList<ResearchBuildOrder> researchTaskOrder = new ArrayList <ResearchBuildOrder>(); //the actual queue in use
+	int researchTaskIndex = 0;//position in the queue
 	
 	public ResearchManager() {
-		researchOrder.add(snipe);
-		researchOrder.add(rocket);
-		researchOrder.add(blink);
+
+		//really lazy implementation for the current snipe first strategy;
+		researchTaskOrder.add(snipe);
+		researchTaskOrder.add(rocket);
+		researchTaskOrder.add(blink);
 	}
 	
 	
@@ -31,8 +33,6 @@ public class ResearchManager {
 	// ResearchBuildOrder roundedCombat = new ResearchBuildOrder (new int[]
 	// {2,3,4},false);
 
-	//really lazy implementation to the current snipe first strategy;
-	
 	// tracks the completed researches for each tree independently.
 	// Because UnitType as an enum includes factories at 0, they must also be
 	// included here
@@ -41,7 +41,7 @@ public class ResearchManager {
 	// maximum researches for each tree.
 	// makes sure we don't research excessively
 	// and then explode for being wrong
-	protected int[] maxResearches = { 0, 3, 3, 4, 3, 3, 4 };
+	protected int[] researchUpperLimit = { 0, 3, 3, 4, 3, 3, 4 };
 
 	/*
 	 * For reference, the UnitType enums: 0Factory 1Healer 2Knight 3Mage 4Ranger
@@ -49,7 +49,7 @@ public class ResearchManager {
 	 */
 
 	// The unit type of the current research
-	protected UnitType currentResearchType;
+	protected UnitType currentResearchUnitType;
 
 	/*
 	 *The call per game turn to check if the current research task needs updating.
@@ -57,7 +57,7 @@ public class ResearchManager {
 	public void updateResearchQueue() {
 		ResearchInfo currentResearch = gc.researchInfo();
 		if (currentResearch.roundsLeft() == 0) {
-			researchProgress[currentResearchType.ordinal()]++;
+			researchProgress[currentResearchUnitType.ordinal()]++;
 			addNextResearch();
 		}
 
@@ -65,16 +65,19 @@ public class ResearchManager {
 
 	
 	/*
-	 * The actual logic
+	 * The actual logic behind updating research.
+	 * It first asks for the next item in the current research task.
+	 * If that returns null, the current research task is completed or cannot be progressed further
+	 * move to the next tasks in line until we run out of research tasks. If there are no more tasks, don't do anything
 	 */
 	public void addNextResearch() {
 		UnitType researchThis = null;
-		while(researchThis==null && researchOrderProgress< researchOrder.size()) {
-			UnitType tempResearch = researchOrder.get(researchOrderProgress).getNextResearch();
+		while(researchThis==null && researchTaskIndex< researchTaskOrder.size()) {
+			UnitType tempResearch = researchTaskOrder.get(researchTaskIndex).getNextResearch();
 			if(tempResearch != null) {
 				researchThis = tempResearch;
 			} else {
-				researchOrderProgress++;
+				researchTaskIndex++;
 			} //end if/else
 		}//end while
 		gc.queueResearch(researchThis);
@@ -86,19 +89,19 @@ public class ResearchManager {
 	
 	
 	public ArrayList<ResearchBuildOrder> getResearchOrder() {
-		return researchOrder;
+		return researchTaskOrder;
 	}
 
 	public void setResearchOrder(ArrayList<ResearchBuildOrder> researchOrder) {
-		this.researchOrder = researchOrder;
+		this.researchTaskOrder = researchOrder;
 	}
 
 	public UnitType getCurrentResearchType() {
-		return currentResearchType;
+		return currentResearchUnitType;
 	}
 
 	public void setCurrentResearchType(UnitType currentResearchType) {
-		this.currentResearchType = currentResearchType;
+		this.currentResearchUnitType = currentResearchType;
 	}
 
 
@@ -114,7 +117,7 @@ public class ResearchManager {
 		 */
 		private ArrayList<UnitType> queue; // workhorse of the class.
 		private boolean includingDependencies = false;
-		private int currentArr = 0; //current position in the research queue
+		private int tempIndex = 0; //current position in the research queue
 
 		// valued constructor. Takes an array of of ints for visual compression and
 		// creates a research queue based on the corresponding unit types
@@ -132,22 +135,22 @@ public class ResearchManager {
 		
 		//Gets the next research from the buildorder. There is probably some better way to manage the data validation segment
 		public UnitType getNextResearch() {
-			if(currentArr < queue.size()) {
+			if(tempIndex < queue.size()) {
 				boolean valid = false;
 				UnitType returnThis = null;
 				
 				//more data validation. Are we about to attempt impossible research?
-				while(!valid && currentArr<queue.size()) { 							
+				while(!valid && tempIndex<queue.size()) { 							
 					//find the next research in line
-					returnThis = queue.get(currentArr);								
+					returnThis = queue.get(tempIndex);								
 					//what position in the enum array is it
 					int tempArrIndex = returnThis.ordinal();
 					//if we haven't done too much research in that field, do it
-					if(researchProgress[tempArrIndex]<maxResearches[tempArrIndex]) {	
+					if(researchProgress[tempArrIndex]<researchUpperLimit[tempArrIndex]) {	
 						valid = true;
 					}
 					//increment our position in the queue even if the attempted research fails
-					currentArr++;													
+					tempIndex++;													
 				}
 				//failsafe against going too far into the queue
 				if(!valid) {														
