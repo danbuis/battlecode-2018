@@ -37,7 +37,66 @@ public class Player {
                 Unit unit = units.get(i);
 
                 NavigationManager test = navigationManagers.get(unit.id());
-                test.navigate();
+                if(gc.isMoveReady(unit.id())){
+	                Direction dir = test.navigate(unit);
+	                if(dir!=null){
+		                System.out.println("about to move unit "+unit.id()+" "+dir.name());
+		                System.out.println("currentLocation "+unit.location().mapLocation());
+		                if(dir.equals(Direction.Southwest)){
+		                	if (gc.canMove(unit.id(), Direction.Southwest)) {
+		                        gc.moveRobot(unit.id(), Direction.Southwest);
+		                        System.out.println("moving south west");
+		                	}
+		                }else if(dir.equals(Direction.Southeast)){
+		                	if (gc.canMove(unit.id(), Direction.Southeast)) {
+		                        gc.moveRobot(unit.id(), Direction.Southeast);
+		                        System.out.println("moving south east");
+		                	}
+		                }else if(dir.equals(Direction.South)){
+		                	if (gc.canMove(unit.id(), Direction.South)) {
+		                        gc.moveRobot(unit.id(), Direction.South);
+		                        System.out.println("moving south");
+		                	}
+		                }
+		                else if(dir.equals(Direction.East)){
+		                	if (gc.canMove(unit.id(), Direction.East)) {
+		                        gc.moveRobot(unit.id(), Direction.East);
+		                        System.out.println("moving east");
+		                	}
+		                }
+		                else if(dir.equals(Direction.West)){
+		                	if (gc.canMove(unit.id(), Direction.West)) {
+		                        gc.moveRobot(unit.id(), Direction.West);
+		                        System.out.println("moving west");
+		                	}
+		                }else if(dir.equals(Direction.Northeast)){
+		                	if (gc.canMove(unit.id(), Direction.Northeast)) {
+		                        gc.moveRobot(unit.id(), Direction.Northeast);
+		                        System.out.println("moving north east");
+		                	}
+		                }else if(dir.equals(Direction.Northwest)){
+		                	if (gc.canMove(unit.id(), Direction.Northwest)) {
+		                        gc.moveRobot(unit.id(), Direction.Northwest);
+		                        System.out.println("moving north west");
+		                	}
+		                }else if(dir.equals(Direction.North)){
+		                	if (gc.canMove(unit.id(), Direction.North)) {
+		                        gc.moveRobot(unit.id(), Direction.North);
+		                        System.out.println("moving north");
+		                	}
+		                }
+	                }
+                }
+                System.out.println("current location "+unit.location().mapLocation());
+                
+                //THE BELOW WORKS, SO I'M GOING TO TRY TO HAVE THE NAVIGATION MANAGER
+                //RETURN A DIRECTION AND HAVE THIS CLASS MOVE THE UNIT.
+             /*// Most methods on gc take unit IDs, instead of the unit objects themselves.
+                System.out.println("attempting to move unit "+unit.id()+" southwest");
+                System.out.println("current position "+unit.location().mapLocation());
+                if (gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), Direction.Southwest)) {
+                    gc.moveRobot(unit.id(), Direction.Southwest);
+                }*/
             }
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();

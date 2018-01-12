@@ -12,9 +12,6 @@ public class NavigationManager {
 	//need access to game controller for basically everything
 	private GameController gc;
 	
-	//need access to the unit that goes with this structure
-	private Unit unit;
-	
 	//track what locations this robot has recently visited
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
@@ -30,22 +27,23 @@ public class NavigationManager {
 	//general purpose constructor
 	public NavigationManager(GameController gc, Unit unit){
 		this.gc = gc;
-		this.unit=unit;
 		atTargetLocation=false; //initialize variable
 	}
 	
 	/**
 	 * public facing entry method for navigation
+	 * @return 
 	 */
-	public void navigate(){
+	public Direction navigate(Unit unit){
 		System.out.println("Navigating with unit "+unit.id());
 		MapLocation currentLoc = unit.location().mapLocation();
-		System.out.println("currently at "+currentLoc.getX()+","+currentLoc.getY());
+		System.out.println("currently at "+currentLoc);
 		System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
 		if(!atTargetLocation && targetLocation!=null){
 			System.out.println("callingNavToPoint()");
-			navToPoint();
+			return navToPoint(unit);
 		}
+		else return null;
 	}
 	
 	
@@ -57,8 +55,9 @@ public class NavigationManager {
 	 * If a direction is found, it moves, and does some upkeep to past positions, and checks to see if it is at its destination.
 	 * 
 	 * @param accuracy - how close do you need to get? Uses distance squared 0 means spot on, 2 is within one tile (inc diagonals) 4 is within 2 tiles etc.
+	 * @return 
 	 */
-	private void navToPoint(){
+	private Direction navToPoint(Unit unit){
 		MapLocation currentLocation = unit.location().mapLocation();
 		MapLocation locationToTest;
 		long smallestDist=1000000000; //arbitrary large number
@@ -90,15 +89,15 @@ public class NavigationManager {
 						}
 					}
 				}
-			i++;
+				i++;
 			}//end of for-each loop
-		}//end move ready if
+		}//end move ready if.
 		
 		//movement and maintenance
 		if(closestDirection!=null){
 			System.out.println("found a closest direction, calling navInDirection()");
 			System.out.println("heading "+closestDirection.name());
-			navInDirection(true, closestDirection);
+			cleanUpAfterMove(unit);
 		}else{
 			//can't get any closer
 			System.out.println("can't get closer, erasing past locations");
@@ -112,32 +111,20 @@ public class NavigationManager {
 			atTargetLocation=true;
 			System.out.println("Unit "+unit.id()+" arrived at destination.");
 		}
+		
+		return closestDirection;
 	}
 	
 	/**
-	 * Code to navigate in a given direction. All navigation related code will funnel to here
+	 * Code to maintain the pastLocations list
 	 * @param prechecked - was the direction verified before calling this method?
 	 */
-	private void navInDirection(boolean prechecked, Direction direction){
-		boolean resultOfCheck = true;
-		if(!prechecked){
-			resultOfCheck = gc.isMoveReady(unit.id()) && gc.canMove(unit.id(), direction);
-		}
-		
-		if(resultOfCheck){
+	private void cleanUpAfterMove(Unit unit){
 			//add current location
 			pastLocations.add(unit.location().mapLocation());
-			//move
-			System.out.println("moving unit "+direction.name());
-			System.out.println("old location"+unit.location().mapLocation());
-			gc.moveRobot(unit.id(), direction);
-			System.out.println("moved unit, new location "+unit.location().mapLocation());
 			//get rid of oldest to maintain recent locations
 			if (pastLocations.size()>9)
-				pastLocations.remove(0);
-			
-		}
-		
+				pastLocations.remove(0);	
 	}
 
 
