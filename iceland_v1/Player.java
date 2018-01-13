@@ -22,6 +22,7 @@ public class Player {
 	private static List<KnightBot> knightList=new ArrayList<KnightBot>();
 	private static List<RocketBot> rocketList=new ArrayList<RocketBot>();
 	private static List<FactoryBot> factoryList=new ArrayList<FactoryBot>();
+	private static List<Unit> blueprintList=new ArrayList<Unit>();
 
 	private static WorkerManager workerManager;
 	
@@ -40,7 +41,7 @@ public class Player {
         GameController gc = new GameController();
         
         //initialize unit managers
-        workerManager = new WorkerManager(gc, workerList);
+        workerManager = new WorkerManager(gc, workerList, blueprintList);
         
         //initializing player
         initPlayer(gc);
@@ -58,6 +59,7 @@ public class Player {
             rangerList.clear();
             rocketList.clear();
             workerList.clear();
+            blueprintList.clear();
             
             for (int i = 0; i < units.size(); i++) {
                 Unit unit = units.get(i);
@@ -75,7 +77,10 @@ public class Player {
                 UnitType type = unit.unitType();
                 switch(type){
                 case Factory:
-                	factoryList.add((FactoryBot) basicBotMaps.get(unit.id()));
+                	if(unit.structureIsBuilt()==0){ //0=false
+                		blueprintList.add(unit);
+                	}else
+                		factoryList.add((FactoryBot) basicBotMaps.get(unit.id()));
                 case Healer:
                 	healerList.add((HealerBot) basicBotMaps.get(unit.id()));
                 case Knight:
@@ -85,6 +90,9 @@ public class Player {
                 case Ranger:
                 	rangerList.add((RangerBot) basicBotMaps.get(unit.id()));
                 case Rocket:
+                	if(unit.structureIsBuilt()==0){ //0=false
+                		blueprintList.add(unit);
+                	}else
                 	rocketList.add((RocketBot) basicBotMaps.get(unit.id()));
                 case Worker:
                 	workerList.add((WorkerBot) basicBotMaps.get(unit.id()));
@@ -95,6 +103,13 @@ public class Player {
             if(gc.round()==1){
             	System.out.println("Player order given");
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
+            	System.out.println("Order 1 random factory built");
+            	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
+            }
+            
+            if(gc.round()==60){
+            	System.out.println("Ordering a factory built at 12,5");
+            	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 12,5));
             }
             
             if(gc.round()==250){
@@ -118,8 +133,6 @@ public class Player {
         for (int i = 0; i < units.size(); i++) {
             Unit unit = units.get(i);
             WorkerBot startingWorker = new WorkerBot(gc, unit.id());
-            MapLocation targetLoc= new MapLocation(Planet.Earth, 10,5);
-            startingWorker.setTargetLocation(targetLoc);
             
             //                  key        value
             basicBotMaps.put(unit.id(), startingWorker);

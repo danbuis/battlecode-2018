@@ -78,6 +78,7 @@ public class Player {
                 switch(type){
                 case Factory:
                 	if(unit.structureIsBuilt()==0){ //0=false
+                		System.out.println("adding a blueprint to list");
                 		blueprintList.add(unit);
                 	}else
                 		factoryList.add((FactoryBot) basicBotMaps.get(unit.id()));
@@ -95,6 +96,7 @@ public class Player {
                 	}else
                 	rocketList.add((RocketBot) basicBotMaps.get(unit.id()));
                 case Worker:
+                	System.out.println("Adding unit to workerList: "+unit.id()+" of type "+unit.unitType());
                 	workerList.add((WorkerBot) basicBotMaps.get(unit.id()));
                 }    
             } //end of counting and classifying units
@@ -103,6 +105,13 @@ public class Player {
             if(gc.round()==1){
             	System.out.println("Player order given");
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
+            	System.out.println("Order 1 random factory built");
+            	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
+            }
+            
+            if(gc.round()==60){
+            	System.out.println("Ordering a factory built at 12,5");
+            	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 12,5));
             }
             
             if(gc.round()==250){

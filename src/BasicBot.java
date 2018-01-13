@@ -25,7 +25,7 @@ public class BasicBot {
 	//private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
 	//private MapLocation targetLocation=null;
 	
-	public Stack<Order> orderStack;
+	public Stack<Order> orderStack = new Stack<Order>();
 	
 	// does what it says on the box.  
 	public boolean atTargetLocation;
