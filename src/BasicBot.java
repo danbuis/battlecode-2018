@@ -9,7 +9,7 @@ import bc.*;
  *
  */
 public class BasicBot {
-	private boolean debug = true;
+	private boolean debug = false;
 	
 	//unit associated with this
 	public int unitID;
@@ -147,7 +147,7 @@ public class BasicBot {
 	 * @param dir
 	 * @param unit
 	 */
-	private void moveInDirection(Direction dir, Unit unit){
+	public void moveInDirection(Direction dir, Unit unit){
 		   if(dir!=null){
 			   if(debug){
 				   System.out.println("about to move unit "+unitID+" "+dir.name());
