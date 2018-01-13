@@ -35,7 +35,7 @@ public class WorkerManager implements UnitManagersInterface{
 	@Override
 	public void issueOrderMoveAllUnits(MapLocation targetLocation) {
 		for(WorkerBot bot: workers){
-			bot.setTargetLocation(targetLocation);
+			bot.orderStack.add(new Order(OrderType.MOVE, targetLocation));
 		}		
 	}
 
@@ -46,62 +46,63 @@ public class WorkerManager implements UnitManagersInterface{
 	 * have something else nearby to do, like build a nearby structure etc.
 	 */
 	public void eachTurnMoveAllUnits() {
-		for(WorkerBot bot:workers){
+		for(WorkerBot worker:workers){
 			//first check if there is a structure nearby to help build
 			for(Unit blueprint:blueprintList){
-				long distanceToBlueprint=gc.unit(bot.unitID).location().mapLocation()
+				long distanceToBlueprint=gc.unit(worker.unitID).location().mapLocation()
 						.distanceSquaredTo(blueprint.location().mapLocation());
-				if(distanceToBlueprint<=distanceToHelpBuild){//if close enough to come help
-					
-					if(debug) System.out.println("Close enough to help build");
-					//we're adjacent!
-					if(gc.canBuild(bot.unitID, blueprint.id())){
-						gc.build(bot.unitID, blueprint.id());
-					}else{
-						//move toward blueprint
-						MapLocation currentLocation = gc.unit(bot.unitID).location().mapLocation();
-						MapLocation blueprintLocation = gc.unit(blueprint.id()).location().mapLocation();
-						bot.moveInDirection(currentLocation.directionTo(blueprintLocation),gc.unit(bot.unitID));
-						//try build again now that we're closer...
-						if(gc.canBuild(bot.unitID, blueprint.id())){
-							gc.build(bot.unitID, blueprint.id());
-						}//end inside if can build
-					}//end else
+				
+				if(distanceToBlueprint<=distanceToHelpBuild){
+					//if close enough to come help issue a build order
+					worker.orderStack.push(new Order(OrderType.BUILD, blueprint.location().mapLocation()));
 				}//end if distance less than
 			}//end for each blueprint
 			
-			//checks if we have a targetLocation, and if the bot can actually move
-			//since we might have moved closer to a nearby blueprint to be helpful.
-			if(bot.getTargetLocation()!=null && gc.isMoveReady(bot.unitID))
-				bot.navigate(gc.unit(bot.unitID));
-		}
+			//checks if we have a targetLocation that we haven't arrived at,
+			//and if the bot can actually move since we might have
+			//moved closer to a nearby blueprint to be helpful.
+			if(worker.orderStack.peek().getLocation()!=null && !worker.atTargetLocation && gc.isMoveReady(worker.unitID))
+				worker.navigate(gc.unit(worker.unitID));
+				worker.activate();
+		}//end for each worker
 		
 	}
 	
 	
 	/**
-	 * use this one when you don't care where a factory gets built.  Has an O(N^2)
+	 * use this one when you don't care where a structure gets built.  Has an O(N^2)
 	 * loop where it checks all workers and all directions until it is successful.
 	 */
-	public boolean issueOrderBuildFactory(){
-		int unitID;
-		if(debug) System.out.println("issueOrderBuildFactory()");
-		//if we have enough karbonite and a worker on the field
-		if(gc.karbonite()>=100 && workers.size()>0){
-			if(debug) System.out.println("enough resources");
+	public void issueOrderBlueprintStructure(UnitType type){
+		int unitID; //id of the worker 
+		if(debug) System.out.println("issueOrderBuildStructure()");
+		//if we have a worker on the field
+		if(workers.size()>0){
 			for(WorkerBot worker:workers){
 				unitID=worker.unitID;
 				//try each direction
 				for(Direction dir:Direction.values()){
-					if(gc.canBlueprint(unitID, UnitType.Factory, dir)){
-						gc.blueprint(unitID, UnitType.Factory, dir);
-						return true;
+					if(gc.canBlueprint(unitID, type, dir)){
+						if (type.equals(UnitType.Rocket)){
+							worker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(unitID).location().mapLocation().add(dir)));
+						}else{
+							worker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, gc.unit(unitID).location().mapLocation().add(dir)));
+
+						}
 					}
 				}//end for each direction
-			}//end for each worker
-			
+			}//end for each worker		
 		}//end if enough resources
-		return false;
+	}//end method
+	
+	
+	/**
+	 * use this one to build a structure at a specific location
+	 * @param type
+	 * @param location
+	 */
+	public void issueOrderBlueprintStructureAtLocation(UnitType type, MapLocation location){
+		
 	}
 
 }

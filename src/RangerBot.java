@@ -42,7 +42,6 @@ public class RangerBot extends BasicBot {
 		
 	}
 	
-	public void 
 	
 	
 

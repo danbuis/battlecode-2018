@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import bc.*;
 /**\
@@ -15,20 +16,22 @@ public class BasicBot {
 	public int unitID;
 	
 	//need access to game controller for basically everything
-	private GameController gc;
+	public GameController gc;
 	
 	//track what locations this robot has recently visited
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
 	//target MapLocation.  Parent gameController can set it whenever it needs to.
 	//private MapLocation targetLocation=new MapLocation(Planet.Earth, 10,5);
-	private MapLocation targetLocation=null;
+	//private MapLocation targetLocation=null;
+	
+	public Stack<Order> orderStack;
 	
 	// does what it says on the box.  
-	private boolean atTargetLocation;
+	public boolean atTargetLocation;
 	
 	//how close do you need to be to the target location.  Reset to 2 upon arrival at a destination. This allows it to be at or adjacent to the target
-	private int howCloseToDestination = 2;
+	private int howCloseToDestination = 1;
 	
 	//general purpose constructor
 	public BasicBot(GameController gc, int unitID){
@@ -47,10 +50,10 @@ public class BasicBot {
 		MapLocation currentLoc = unit.location().mapLocation();
 		if(debug){
 			System.out.println("currently at "+currentLoc);
-			System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
+			System.out.println("at target:"+atTargetLocation+" and target is:"+orderStack.peek().getLocation());
 		}
 		//if we have a target and are not there yet, nav to that point
-		if(!atTargetLocation && targetLocation!=null){
+		if(!atTargetLocation && orderStack.peek().getLocation()!=null){
 			if (debug) System.out.println("callingNavToPoint()");
 			navToPoint(unit);
 		}
@@ -70,6 +73,7 @@ public class BasicBot {
 	private void navToPoint(Unit unit){
 		MapLocation currentLocation = unit.location().mapLocation();
 		MapLocation locationToTest;
+		MapLocation targetLocation = orderStack.peek().getLocation();
 		long smallestDist=1000000000; //arbitrary large number
 		long temp;
 		Direction closestDirection=null;
@@ -121,9 +125,12 @@ public class BasicBot {
 		
 		//have we arrived close enough?
 		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=howCloseToDestination){
-			howCloseToDestination = 2;
-			targetLocation = null;
 			atTargetLocation=true;
+			
+			//if order was a MOVE order, it is complete, go ahead and pop it off the stack
+			if(orderStack.peek().getType().equals(OrderType.MOVE)){
+				orderStack.pop();
+			}
 			if (debug) System.out.println("Unit "+unit.id()+" arrived at destination.");
 		}
 		
@@ -201,14 +208,6 @@ public class BasicBot {
 	}
 
 
-	public MapLocation getTargetLocation() {
-		return targetLocation;
-	}
 
-
-	public void setTargetLocation(MapLocation targetLocation) {
-		this.targetLocation = targetLocation;
-		atTargetLocation = false;
-	}
 
 }

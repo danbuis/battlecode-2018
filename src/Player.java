@@ -126,8 +126,6 @@ public class Player {
         for (int i = 0; i < units.size(); i++) {
             Unit unit = units.get(i);
             WorkerBot startingWorker = new WorkerBot(gc, unit.id());
-            MapLocation targetLoc= new MapLocation(Planet.Earth, 10,5);
-            startingWorker.setTargetLocation(targetLoc);
             
             //                  key        value
             basicBotMaps.put(unit.id(), startingWorker);
