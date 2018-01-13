@@ -12,12 +12,14 @@ import bc.*;
 public class BasicBot {
 	private boolean debug = false;
 	
-	//unit associated with this
-	public int unitID;
-	
 	//need access to game controller for basically everything
 	public GameController gc;
+		
+	//unit associated with this
+	public int unitID;
+	public Unit thisUnit = gc.unit(unitID);
 	
+
 	//track what locations this robot has recently visited
 	private List<MapLocation> pastLocations =new ArrayList<MapLocation>();
 	
