@@ -14,8 +14,24 @@ public class WorkerBot extends BasicBot {
 	 * @param type
 	 * @param direction
 	 */
-	public void blueprintStructure(UnitType type, Direction direction){
-		gc.blueprint(unitID, type, direction);
+	public void blueprintStructure(UnitType type){
+		
+		MapLocation locationToBlueprint = this.orderStack.peek().getLocation();
+		MapLocation currentLocation = gc.unit(unitID).location().mapLocation();
+		
+		//is location adjacent
+		if(currentLocation.isAdjacentTo(locationToBlueprint)){
+			Direction dir = currentLocation.directionTo(locationToBlueprint);
+			if(gc.canBlueprint(unitID, type, dir)){
+				gc.blueprint(unitID, type, dir);
+				//successfully blueprinted!
+				this.orderStack.pop();
+			}
+		}
+		
+		
+		
+		
 	}
 
 	/**
@@ -23,14 +39,13 @@ public class WorkerBot extends BasicBot {
 	 */
 	public void activate() {
 		Order currentOrder = orderStack.peek();
-		Direction dirToOrderLocation = gc.unit(unitID).location().mapLocation().directionTo(currentOrder.getLocation());
 		
 		if(currentOrder.getType()==OrderType.BUILD){
 			buildStructure(currentOrder);		
 		}else if(currentOrder.getType()==OrderType.BLUEPRINT_FACTORY){
-			blueprintStructure(UnitType.Factory, dirToOrderLocation);
+			blueprintStructure(UnitType.Factory);
 		}else if(currentOrder.getType()==OrderType.BLUEPRINT_ROCKET){
-			blueprintStructure(UnitType.Rocket, dirToOrderLocation);
+			blueprintStructure(UnitType.Rocket);
 		}
 		
 	}

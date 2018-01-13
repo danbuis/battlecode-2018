@@ -87,7 +87,6 @@ public class WorkerManager implements UnitManagersInterface{
 							worker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(unitID).location().mapLocation().add(dir)));
 						}else{
 							worker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, gc.unit(unitID).location().mapLocation().add(dir)));
-
 						}
 					}
 				}//end for each direction
@@ -102,6 +101,24 @@ public class WorkerManager implements UnitManagersInterface{
 	 * @param location
 	 */
 	public void issueOrderBlueprintStructureAtLocation(UnitType type, MapLocation location){
+		WorkerBot closestWorker=null;
+		long distance = 10000000;
+		
+		//find closest
+		for(WorkerBot worker: workers){
+			if(gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location)<distance){
+				closestWorker = worker;
+				distance = gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location);
+			}
+		}
+		
+		if (type.equals(UnitType.Rocket)){
+			closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(closestWorker.unitID).location().mapLocation()));
+		}else{
+			closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, gc.unit(closestWorker.unitID).location().mapLocation()));
+		}
+		
+		
 		
 	}
 
