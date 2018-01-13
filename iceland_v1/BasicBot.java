@@ -8,8 +8,11 @@ import bc.*;
  * @author dbuis
  *
  */
-public class NavigationManager {
-	private boolean debug = false;
+public class BasicBot {
+	private boolean debug = true;
+	
+	//unit associated with this
+	public int unitID;
 	
 	//need access to game controller for basically everything
 	private GameController gc;
@@ -25,10 +28,11 @@ public class NavigationManager {
 	private boolean atTargetLocation;
 	
 	//how close do you need to be to the target location.  Reset to 2 upon arrival at a destination. This allows it to be at or adjacent to the target
-	private int accuracy = 2;
+	private int howCloseToDestination = 2;
 	
 	//general purpose constructor
-	public NavigationManager(GameController gc, Unit unit){
+	public BasicBot(GameController gc, int unitID){
+		this.unitID= unitID;
 		this.gc = gc;
 		atTargetLocation=false; //initialize variable
 	}
@@ -37,18 +41,19 @@ public class NavigationManager {
 	 * public facing entry method for navigation
 	 * @return 
 	 */
-	public Direction navigate(Unit unit){
+	public void navigate(Unit unit){
 		if (debug) System.out.println("Navigating with unit "+unit.id());
+		//grab current location
 		MapLocation currentLoc = unit.location().mapLocation();
 		if(debug){
 			System.out.println("currently at "+currentLoc);
 			System.out.println("at target:"+atTargetLocation+" and target is:"+targetLocation);
 		}
+		//if we have a target and are not there yet, nav to that point
 		if(!atTargetLocation && targetLocation!=null){
 			if (debug) System.out.println("callingNavToPoint()");
-			return navToPoint(unit);
+			navToPoint(unit);
 		}
-		else return null;
 	}
 	
 	
@@ -62,13 +67,12 @@ public class NavigationManager {
 	 * @param accuracy - how close do you need to get? Uses distance squared 0 means spot on, 2 is within one tile (inc diagonals) 4 is within 2 tiles etc.
 	 * @return 
 	 */
-	private Direction navToPoint(Unit unit){
+	private void navToPoint(Unit unit){
 		MapLocation currentLocation = unit.location().mapLocation();
 		MapLocation locationToTest;
 		long smallestDist=1000000000; //arbitrary large number
 		long temp;
 		Direction closestDirection=null;
-		int unitID = unit.id();
 		int i=1;
 		
 		if(gc.isMoveReady(unitID)){
@@ -91,6 +95,7 @@ public class NavigationManager {
 						if (debug)System.out.println("distance :"+temp);
 						if (temp<smallestDist){
 							if (debug)System.out.println("new closest!");
+							//new closest point, update accordingly
 							smallestDist=temp;
 							closestDirection=dir;
 						}
@@ -100,12 +105,13 @@ public class NavigationManager {
 			}//end of for-each loop
 		}//end move ready if.
 		
-		//movement and maintenance
+		//actual movement and maintenance of places recently visited
 		if(closestDirection!=null){
 			if (debug){
 				System.out.println("found a closest direction, calling navInDirection()");
 				System.out.println("heading "+closestDirection.name());
 			}
+			moveInDirection(closestDirection, unit);
 			cleanUpAfterMove(unit);
 		}else{
 			//can't get any closer
@@ -114,14 +120,14 @@ public class NavigationManager {
 		}
 		
 		//have we arrived close enough?
-		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=accuracy){
-			accuracy = 2;
+		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=howCloseToDestination){
+			howCloseToDestination = 2;
 			targetLocation = null;
 			atTargetLocation=true;
 			if (debug) System.out.println("Unit "+unit.id()+" arrived at destination.");
 		}
 		
-		return closestDirection;
+		;
 	}
 	
 	/**
@@ -134,6 +140,64 @@ public class NavigationManager {
 			//get rid of oldest to maintain recent locations
 			if (pastLocations.size()>9)
 				pastLocations.remove(0);	
+	}
+	
+	/**
+	 * actually moves the unit in the right direction as determined earlier
+	 * @param dir
+	 * @param unit
+	 */
+	private void moveInDirection(Direction dir, Unit unit){
+		   if(dir!=null){
+			   if(debug){
+				   System.out.println("about to move unit "+unitID+" "+dir.name());
+				   System.out.println("currentLocation "+unit.location().mapLocation());
+			   }
+               if(dir.equals(Direction.Southwest)){
+               	if (gc.canMove(unitID, Direction.Southwest)) {
+                       gc.moveRobot(unitID, Direction.Southwest);
+                       System.out.println("moving south west");
+               	}
+               }else if(dir.equals(Direction.Southeast)){
+               	if (gc.canMove(unitID, Direction.Southeast)) {
+                       gc.moveRobot(unitID, Direction.Southeast);
+                       System.out.println("moving south east");
+               	}
+               }else if(dir.equals(Direction.South)){
+               	if (gc.canMove(unitID, Direction.South)) {
+                       gc.moveRobot(unitID, Direction.South);
+                       System.out.println("moving south");
+               	}
+               }
+               else if(dir.equals(Direction.East)){
+               	if (gc.canMove(unitID, Direction.East)) {
+                       gc.moveRobot(unitID, Direction.East);
+                       System.out.println("moving east");
+               	}
+               }
+               else if(dir.equals(Direction.West)){
+               	if (gc.canMove(unitID, Direction.West)) {
+                       gc.moveRobot(unitID, Direction.West);
+                       System.out.println("moving west");
+               	}
+               }else if(dir.equals(Direction.Northeast)){
+               	if (gc.canMove(unitID, Direction.Northeast)) {
+                       gc.moveRobot(unitID, Direction.Northeast);
+                       System.out.println("moving north east");
+               	}
+               }else if(dir.equals(Direction.Northwest)){
+               	if (gc.canMove(unitID, Direction.Northwest)) {
+                       gc.moveRobot(unitID, Direction.Northwest);
+                       System.out.println("moving north west");
+               	}
+               }else if(dir.equals(Direction.North)){
+               	if (gc.canMove(unitID, Direction.North)) {
+                       gc.moveRobot(unitID, Direction.North);
+                       System.out.println("moving north");
+               	}
+               }
+           }
+		
 	}
 
 
