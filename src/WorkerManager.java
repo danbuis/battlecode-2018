@@ -26,7 +26,7 @@ public class WorkerManager implements UnitManagersInterface{
 
 
 	@Override
-	public void issueOrderMoveSpecificUnit(MapLocation targetLocation, Unit unit) {
+	public void issueOrderMoveSpecificUnit(MapLocation targetLocation, BasicBot unit) {
 		// TODO Auto-generated method stub
 		
 	}
