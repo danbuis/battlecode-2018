@@ -68,7 +68,7 @@ public class WorkerManager implements UnitManagersInterface{
 			//moved closer to a nearby blueprint to be helpful.
 			System.out.println(worker==null);
 			System.out.println(worker.orderStack.size()+" orders");
-			if(worker.orderStack.peek().getLocation()!=null && !worker.atTargetLocation && gc.isMoveReady(worker.unitID))
+			if(worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID))
 				worker.navigate(gc.unit(worker.unitID));
 				worker.activate();
 		}//end for each worker

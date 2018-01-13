@@ -68,7 +68,7 @@ public class WorkerManager implements UnitManagersInterface{
 			//moved closer to a nearby blueprint to be helpful.
 			System.out.println(worker==null);
 			System.out.println(worker.orderStack.size()+" orders");
-			if(worker.orderStack.peek().getLocation()!=null && !worker.atTargetLocation && gc.isMoveReady(worker.unitID))
+			if(worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID))
 				worker.navigate(gc.unit(worker.unitID));
 				worker.activate();
 		}//end for each worker
@@ -91,12 +91,15 @@ public class WorkerManager implements UnitManagersInterface{
 				//try each direction
 				for(Direction dir:Direction.values()){
 					if(gc.canBlueprint(unitID, type, dir)){
-						System.out.println("pushing a build order to unit "+unitID);
+						System.out.println("pushing a blueprint order to unit "+unitID+" type: "+type.name());
 						if (type.equals(UnitType.Rocket)){
 							worker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(unitID).location().mapLocation().add(dir)));
+							return;
 						}else{
 							worker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, gc.unit(unitID).location().mapLocation().add(dir)));
+							return;
 						}
+						
 					}
 				}//end for each direction
 			}//end for each worker		

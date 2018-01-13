@@ -17,7 +17,7 @@ public class BasicBot {
 		
 	//unit associated with this
 	public int unitID;
-	public Unit thisUnit = gc.unit(unitID);
+	public Unit thisUnit;
 	
 
 	//track what locations this robot has recently visited
@@ -30,7 +30,7 @@ public class BasicBot {
 	public Stack<Order> orderStack = new Stack<Order>();
 	
 	// does what it says on the box.  
-	public boolean atTargetLocation;
+	//public boolean atTargetLocation;
 	
 	//how close do you need to be to the target location.  Reset to 2 upon arrival at a destination. This allows it to be at or adjacent to the target
 	private int howCloseToDestination = 1;
@@ -39,7 +39,8 @@ public class BasicBot {
 	public BasicBot(GameController gc, int unitID){
 		this.unitID= unitID;
 		this.gc = gc;
-		atTargetLocation=false; //initialize variable
+		this.thisUnit = gc.unit(unitID);
+		//atTargetLocation=false; //initialize variable
 	}
 	
 	/**
@@ -50,12 +51,13 @@ public class BasicBot {
 		if (debug) System.out.println("Navigating with unit "+unit.id());
 		//grab current location
 		MapLocation currentLoc = unit.location().mapLocation();
+		MapLocation targetLoc = this.orderStack.peek().getLocation();
 		if(debug){
 			System.out.println("currently at "+currentLoc);
-			System.out.println("at target:"+atTargetLocation+" and target is:"+orderStack.peek().getLocation());
+			System.out.println("at target:"+targetLoc+" and target is:"+orderStack.peek().getLocation());
 		}
 		//if we have a target and are not there yet, nav to that point
-		if(!atTargetLocation && orderStack.peek().getLocation()!=null){
+		if(targetLoc!=null && !currentLoc.isAdjacentTo(targetLoc)){
 			if (debug) System.out.println("callingNavToPoint()");
 			navToPoint(unit);
 		}
@@ -127,7 +129,7 @@ public class BasicBot {
 		
 		//have we arrived close enough?
 		if(unit.location().mapLocation().distanceSquaredTo(targetLocation)<=howCloseToDestination){
-			atTargetLocation=true;
+			//atTargetLocation=true;
 			
 			//if order was a MOVE order, it is complete, go ahead and pop it off the stack
 			if(orderStack.peek().getType().equals(OrderType.MOVE)){

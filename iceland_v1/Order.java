@@ -32,5 +32,9 @@ public class Order {
 	private void setType(OrderType type) {
 		this.type = type;
 	}
+	
+	public String toString() {
+		return (" Order type: " + type.toString() + "at location: " + location.toString());
+	}
 
 }

@@ -20,10 +20,17 @@ public class WorkerBot extends BasicBot {
 		
 		MapLocation locationToBlueprint = this.orderStack.peek().getLocation();
 		MapLocation currentLocation = gc.unit(unitID).location().mapLocation();
+		System.out.println("top of bluePrintStructure()");
+		System.out.println("locationToBlueprint: "+locationToBlueprint);
+		System.out.println("currentLocation: "+currentLocation);
+		System.out.println("available resources: "+gc.karbonite());
 		
 		//is location adjacent
 		if(currentLocation.isAdjacentTo(locationToBlueprint)){
+			System.out.println("Locations are adjacent");
 			Direction dir = currentLocation.directionTo(locationToBlueprint);
+			System.out.println("attempting to blueprint a "+type.name());
+			System.out.println("in Direction "+dir);
 			if(gc.canBlueprint(unitID, type, dir)){
 				gc.blueprint(unitID, type, dir);
 				//successfully blueprinted!
@@ -42,7 +49,7 @@ public class WorkerBot extends BasicBot {
 	 */
 	public void activate() {
 		Order currentOrder = orderStack.peek();
-		if(debug) System.out.println("performing action with unit "+this.unitID+" "+currentOrder.getType() );
+		if(debug) System.out.println("performing action with unit "+this.unitID+" "+currentOrder.toString() );
 		
 		if(currentOrder.getType()==OrderType.BUILD){
 			buildStructure(currentOrder);		
@@ -69,7 +76,7 @@ public class WorkerBot extends BasicBot {
 			}
 		}else{ //if it doesn't exist or is complete or is on the other team get rid of the order
 			if(debug) System.out.println("Unit "+this.unitID+" build order complete");
-			orderStack.pop();
+			this.orderStack.pop();
 		}
 	}
 
