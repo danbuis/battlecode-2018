@@ -1,4 +1,6 @@
 import bc.*;
+import java.util.Random;
+
 
 public class RangerBot extends BasicBot {
 
@@ -10,7 +12,9 @@ public class RangerBot extends BasicBot {
 		// TODO Auto-generated constructor stub
 		this.gc = gc;
 	}
-
+	
+	
+	//order action tree
 	public void performOrder() {
 		switch (orderStack.peek().getType()) {
 		case MOVE:
@@ -19,28 +23,22 @@ public class RangerBot extends BasicBot {
 		case SNIPE:
 			snipe(orderStack.peek().getLocation());
 			break;
-		default:
+			
+		default:	//if the order is invalid, idle a turn and clean up the stack;
 			idle();
 			break;
 		}
 	}
 
 	public void attackMove() {
-		VecUnit nearbyUnits = gc.senseNearbyUnits(thisUnit.location().mapLocation(), thisUnit.visionRange());
-		if (nearbyUnits.size() > 0) {
-			int closestUnit = findClosestEnemyUnit(nearbyUnits);	//find the closest enemy unit			
-			attemptAttack(closestUnit);
-		}
+		
+		attackNearbyUnits();
 		//did it already shoot?
 		if(thisUnit.attackCooldown()>10) {
-			
+			navigate(thisUnit);
 		} else {
 			navigate(thisUnit);
-			gc.senseNearbyUnits(thisUnit.location().mapLocation(), thisUnit.visionRange());
-			if (nearbyUnits.size() > 0) {
-				int closestUnit = findClosestEnemyUnit(nearbyUnits);	//find the closest enemy unit			
-				attemptAttack(closestUnit);
-			}
+			attackNearbyUnits();
 		}
 	}
 
@@ -52,7 +50,19 @@ public class RangerBot extends BasicBot {
 	}
 
 	public void idle() {
-
+		moveInDirection(Direction.values()[(new Random().nextInt(8))%8], thisUnit);
+		attackNearbyUnits();
+		if (orderStack.size()!=0){
+			orderStack.pop();
+		}
+	}
+	
+	public void attackNearbyUnits(){
+		VecUnit nearbyUnits = gc.senseNearbyUnits(thisUnit.location().mapLocation(), thisUnit.visionRange());
+		if (nearbyUnits.size() > 0) {
+			int closestUnit = findClosestEnemyUnit(nearbyUnits);	//find the closest enemy unit			
+			attemptAttack(closestUnit);
+		}
 	}
 
 	public void attemptAttack(int targ) {

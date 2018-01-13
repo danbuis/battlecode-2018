@@ -1,6 +1,6 @@
 
 public enum OrderType {
-MOVE,
+MOVE,	//automatically removes itself from stack when finished
 BUILD,
 HARVEST,
 BLUEPRINT_FACTORY,
