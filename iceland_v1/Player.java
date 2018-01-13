@@ -78,6 +78,7 @@ public class Player {
                 switch(type){
                 case Factory:
                 	if(unit.structureIsBuilt()==0){ //0=false
+                		System.out.println("adding a blueprint to list");
                 		blueprintList.add(unit);
                 	}else
                 		factoryList.add((FactoryBot) basicBotMaps.get(unit.id()));
@@ -95,6 +96,7 @@ public class Player {
                 	}else
                 	rocketList.add((RocketBot) basicBotMaps.get(unit.id()));
                 case Worker:
+                	System.out.println("Adding unit to workerList: "+unit.id()+" of type "+unit.unitType());
                 	workerList.add((WorkerBot) basicBotMaps.get(unit.id()));
                 }    
             } //end of counting and classifying units

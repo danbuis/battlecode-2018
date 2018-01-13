@@ -50,6 +50,7 @@ public class Player {
             System.out.println("Current round: "+gc.round());
             // VecUnit is a class that you can think of as similar to ArrayList<Unit>, but immutable.
             VecUnit units = gc.myUnits();
+            System.out.println("Number of units: "+units.size());
             
             //clear all lists
             factoryList.clear();
@@ -82,19 +83,24 @@ public class Player {
                 		blueprintList.add(unit);
                 	}else
                 		factoryList.add((FactoryBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Healer:
                 	healerList.add((HealerBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Knight:
                 	knightList.add((KnightBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Mage:
                 	mageList.add((MageBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Ranger:
                 	rangerList.add((RangerBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Rocket:
                 	if(unit.structureIsBuilt()==0){ //0=false
                 		blueprintList.add(unit);
-                	}else
-                	rocketList.add((RocketBot) basicBotMaps.get(unit.id()));
+                	}else rocketList.add((RocketBot) basicBotMaps.get(unit.id()));
+                	break;
                 case Worker:
                 	System.out.println("Adding unit to workerList: "+unit.id()+" of type "+unit.unitType());
                 	workerList.add((WorkerBot) basicBotMaps.get(unit.id()));
