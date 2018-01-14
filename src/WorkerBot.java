@@ -20,17 +20,17 @@ public class WorkerBot extends BasicBot {
 		
 		MapLocation locationToBlueprint = this.orderStack.peek().getLocation();
 		MapLocation currentLocation = gc.unit(unitID).location().mapLocation();
-		System.out.println("top of bluePrintStructure()");
-		System.out.println("locationToBlueprint: "+locationToBlueprint);
-		System.out.println("currentLocation: "+currentLocation);
-		System.out.println("available resources: "+gc.karbonite());
+		if(debug) System.out.println("top of bluePrintStructure()");
+		if(debug) System.out.println("locationToBlueprint: "+locationToBlueprint);
+		if(debug) System.out.println("currentLocation: "+currentLocation);
+		if(debug) System.out.println("available resources: "+gc.karbonite());
 		
 		//is location adjacent
 		if(currentLocation.isAdjacentTo(locationToBlueprint)){
-			System.out.println("Locations are adjacent");
+			if(debug) System.out.println("Locations are adjacent");
 			Direction dir = currentLocation.directionTo(locationToBlueprint);
-			System.out.println("attempting to blueprint a "+type.name());
-			System.out.println("in Direction "+dir);
+			if(debug) System.out.println("attempting to blueprint a "+type.name());
+			if(debug) System.out.println("in Direction "+dir);
 			if(gc.canBlueprint(unitID, type, dir)){
 				gc.blueprint(unitID, type, dir);
 				//successfully blueprinted!
@@ -66,8 +66,8 @@ public class WorkerBot extends BasicBot {
 	private void buildStructure(Order currentOrder){
 		
 		Unit unitAtLocation = gc.senseUnitAtLocation(currentOrder.getLocation());
-		System.out.println("Unit "+unitID+" building a "+unitAtLocation.unitType().name()+" at "+unitAtLocation.location().mapLocation());
-		System.out.println("Structure being built at "+unitAtLocation.health()+" health");
+		if(debug) System.out.println("Unit "+unitID+" building a "+unitAtLocation.unitType().name()+" at "+unitAtLocation.location().mapLocation());
+		if (debug) System.out.println("Structure being built at "+unitAtLocation.health()+" health");
 		//makes sure there is something there, that it is on our team, and that it needs building
 		if(unitAtLocation!=null && unitAtLocation.team().equals(gc.unit(unitID).team())
 		   && unitAtLocation.structureIsBuilt()==0){

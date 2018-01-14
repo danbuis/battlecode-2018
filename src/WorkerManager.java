@@ -57,7 +57,7 @@ public class WorkerManager implements UnitManagersInterface{
 			if (debug) System.out.println("checking worker "+worker.unitID);
 			//first check if there is a structure nearby to help build
 			for(Unit blueprint:blueprintList){
-				System.out.println("top of blueprintList loop");
+				if(debug) System.out.println("top of blueprintList loop");
 				long distanceToBlueprint=gc.unit(worker.unitID).location().mapLocation()
 						.distanceSquaredTo(blueprint.location().mapLocation());
 				if (debug) System.out.println("that blueprint is "+distanceToBlueprint+" away");
@@ -98,7 +98,7 @@ public class WorkerManager implements UnitManagersInterface{
 				//try each direction
 				for(Direction dir:Direction.values()){
 					if(gc.canBlueprint(unitID, type, dir)){
-						System.out.println("pushing a blueprint order to unit "+unitID+" type: "+type.name());
+						if(debug) System.out.println("pushing a blueprint order to unit "+unitID+" type: "+type.name());
 						if (type.equals(UnitType.Rocket)){
 							worker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(unitID).location().mapLocation().add(dir)));
 							return;
@@ -127,18 +127,18 @@ public class WorkerManager implements UnitManagersInterface{
 			for(WorkerBot worker: workers){
 				long distanceToBlueprintTarget = gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location);
 				
-				System.out.println("Worker "+worker.unitID+" is "+distanceToBlueprintTarget+" units away");
+				if(debug) System.out.println("Worker "+worker.unitID+" is "+distanceToBlueprintTarget+" units away");
 				
 				if(distanceToBlueprintTarget <= distance){
-					System.out.println("new closest worker");
+					if(debug) System.out.println("new closest worker");
 					closestWorker = worker;
-					System.out.println("closestWorker null? "+closestWorker==null);
+					if(debug) System.out.println("closestWorker null? "+closestWorker==null);
 					distance = distanceToBlueprintTarget;
 				}
 			}
-			System.out.println("is closestWorker null? "+closestWorker==null);
-			System.out.println("closest worker "+closestWorker);
-			System.out.println(closestWorker.orderStack);
+			if(debug) System.out.println("is closestWorker null? "+closestWorker==null);
+			if(debug) System.out.println("closest worker "+closestWorker);
+			if(debug) System.out.println(closestWorker.orderStack);
 			if (type.equals(UnitType.Rocket)){
 				closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, location ));
 			}else{
