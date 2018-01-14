@@ -15,7 +15,6 @@ public class WorkerManager implements UnitManagersInterface{
 	public WorkerManager(GameController gc, List<WorkerBot> workerList, List<Unit> blueprintList) {
 		this.gc=gc;
 		this.workers = workerList;
-		this.blueprintList=blueprintList;
 	}
 
 
@@ -57,7 +56,10 @@ public class WorkerManager implements UnitManagersInterface{
 			if (debug) System.out.println("checking worker "+worker.unitID);
 			//first check if there is a structure nearby to help build
 			for(Unit blueprint:blueprintList){
+<<<<<<< HEAD
 				if (debug) System.out.println("top of blueprintList loop");
+=======
+>>>>>>> parent of 7f123fe... Workers now assist in building nearby structures
 				long distanceToBlueprint=gc.unit(worker.unitID).location().mapLocation()
 						.distanceSquaredTo(blueprint.location().mapLocation());
 				if (debug) System.out.println("that blueprint is "+distanceToBlueprint+" away");

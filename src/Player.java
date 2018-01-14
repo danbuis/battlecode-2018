@@ -108,11 +108,15 @@ public class Player {
             } //end of counting and classifying units
             
             //example of sending an order to a manager, who will handle the implementation
+<<<<<<< HEAD
             if(gc.round()==20){
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             }
             
             if(gc.round()==744){
+=======
+            if(gc.round()==740){
+>>>>>>> parent of 7f123fe... Workers now assist in building nearby structures
             	//System.out.println("Player order given");
             	//workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             	for( WorkerBot worker : workerList){
