@@ -108,13 +108,13 @@ public class Player {
             } //end of counting and classifying units
             
             //example of sending an order to a manager, who will handle the implementation
-            if(gc.round()==1){
-            	System.out.println("Player order given");
-            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
+            if(gc.round()==740){
+            	//System.out.println("Player order given");
+            	//workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             	System.out.println("Order 1 random factory built");
             	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
             }
-            
+            /*
             if(gc.round()==60 && gc.planet()==Planet.Earth){
             	System.out.println("Ordering a factory built at 12,5");
             	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 12,5));
@@ -129,7 +129,7 @@ public class Player {
             	for(FactoryBot factory : factoryList){
             		System.out.println("Factory "+factory.unitID+" has a health of "+factory.thisUnit.health());
             	}
-            }
+            }*/
             
             System.out.println("calling workerManager move all units");
             workerManager.eachTurnMoveAllUnits();

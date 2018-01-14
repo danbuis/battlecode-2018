@@ -47,15 +47,17 @@ public class WorkerManager implements UnitManagersInterface{
 	 * have something else nearby to do, like build a nearby structure etc.
 	 */
 	public void eachTurnMoveAllUnits() {
-		System.out.println("top of eachTurnMoveAllUnits()");
-		System.out.println("moving "+workers.size()+" units");
+		if (debug){
+			System.out.println("top of eachTurnMoveAllUnits()");
+			System.out.println("moving "+workers.size()+" units");
+		}
 		for(WorkerBot worker:workers){
-			System.out.println("checking worker "+worker.unitID);
+			if (debug) System.out.println("checking worker "+worker.unitID);
 			//first check if there is a structure nearby to help build
 			for(Unit blueprint:blueprintList){
 				long distanceToBlueprint=gc.unit(worker.unitID).location().mapLocation()
 						.distanceSquaredTo(blueprint.location().mapLocation());
-				System.out.println("that blueprint is "+distanceToBlueprint+" away");
+				if (debug) System.out.println("that blueprint is "+distanceToBlueprint+" away");
 				if(worker.orderStack.peek().getType()!=OrderType.BUILD && distanceToBlueprint<=distanceToHelpBuild){
 					//if close enough to come help issue a build order
 					if(debug) System.out.println("pushing a build order to unit "+worker.unitID);
@@ -66,13 +68,15 @@ public class WorkerManager implements UnitManagersInterface{
 			//checks if we have a targetLocation that we haven't arrived at,
 			//and if the bot can actually move since we might have
 			//moved closer to a nearby blueprint to be helpful.
-			System.out.println(worker==null);
-			System.out.println(worker.orderStack.size()+" orders");
-			if(worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID))
+			if(debug){
+				System.out.println(worker==null);
+				System.out.println(worker.orderStack.size()+" orders");
+			}
+			if(worker.orderStack.size()!=0 && worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID)){
 				worker.navigate(gc.unit(worker.unitID));
 				worker.activate();
+				}
 		}//end for each worker
-		
 	}
 	
 	
