@@ -26,6 +26,7 @@ public class Player {
 
 	private static WorkerManager workerManager;
 	private static FactoryManager factoryManager;
+	private static ResearchManager researchManager;
 	
 	private static int targetWorkerPopulation=0;
 	
@@ -115,7 +116,8 @@ public class Player {
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             }
             
-            
+            System.out.println("Updating Research!");
+            researchManager.updateResearchQueue();
             
             System.out.println("calling workerManager move all units");
             workerManager.eachTurnMoveAllUnits();
