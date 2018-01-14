@@ -34,7 +34,7 @@ public class Order {
 	}
 	
 	public String toString() {
-		return (" Order type: " + type.toString() + "at location: " + location.toString());
+		return (" Order type: " + type.toString() + " at location: " + location.toString());
 	}
 
 }
