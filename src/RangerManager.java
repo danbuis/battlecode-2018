@@ -22,8 +22,10 @@ public class RangerManager implements UnitManagersInterface {
 
 	// tell every ranger to snipe a location right now
 	public void issueSnipe(MapLocation targetLocation) {
-		for (int i = 0; i < rangers.size(); i++) {
-			issueReplacementOrder(OrderType.SNIPE, targetLocation, rangers.get(i));
+		if (rangers.size() != 0) {
+			for (int i = 0; i < rangers.size(); i++) {
+				issueReplacementOrder(OrderType.SNIPE, targetLocation, rangers.get(i));
+			}
 		}
 	}
 
@@ -33,15 +35,18 @@ public class RangerManager implements UnitManagersInterface {
 	public void issueOrderMoveAnyUnit(MapLocation targetLocation) {
 
 		// idle bots pass
+
 		long closestDist = 100000; // arbitrarily large number
 		RangerBot closestBot = null;
-		for (int i = 0; i < rangers.size(); i++) {
-			RangerBot tempBot = rangers.get(i);
-			if (tempBot.orderStack.size() == 0) {
-				long tempDist = tempBot.thisUnit.location().mapLocation().distanceSquaredTo(targetLocation);
-				if (tempDist < closestDist) {
-					closestDist = tempDist;
-					closestBot = tempBot;
+		if (rangers.size() != 0) {
+			for (int i = 0; i < rangers.size(); i++) {
+				RangerBot tempBot = rangers.get(i);
+				if (tempBot.orderStack.size() == 0) {
+					long tempDist = tempBot.thisUnit.location().mapLocation().distanceSquaredTo(targetLocation);
+					if (tempDist < closestDist) {
+						closestDist = tempDist;
+						closestBot = tempBot;
+					}
 				}
 			}
 		}
@@ -66,11 +71,13 @@ public class RangerManager implements UnitManagersInterface {
 
 	// tell all idle bots to go to a location
 	public void issueOrderMoveIdleUnits(MapLocation targetLocation) {
-		RangerBot tempBot = null;
-		for (int i = 0; i < rangers.size(); i++) {
-			tempBot = rangers.get(i);
-			if (tempBot.orderStack.size() == 0) {
-				issueNewOrder(OrderType.MOVE, targetLocation, tempBot);
+		if (rangers.size() != 0) {
+			RangerBot tempBot = null;
+			for (int i = 0; i < rangers.size(); i++) {
+				tempBot = rangers.get(i);
+				if (tempBot.orderStack.size() == 0) {
+					issueNewOrder(OrderType.MOVE, targetLocation, tempBot);
+				}
 			}
 		}
 	}
@@ -87,17 +94,21 @@ public class RangerManager implements UnitManagersInterface {
 	// tell every bot to go to a location
 	@Override
 	public void issueOrderMoveAllUnits(MapLocation targetLocation) {
-		for (int i = 0; i < rangers.size(); i++) {
-			issueNewOrder(OrderType.MOVE, targetLocation, rangers.get(i));
-		}
+		if (rangers.size() != 0) {
+			for (int i = 0; i < rangers.size(); i++) {
+				issueNewOrder(OrderType.MOVE, targetLocation, rangers.get(i));
+			}
 
+		}
 	}
 
 	@Override
 	public void eachTurnMoveAllUnits() {
 		// TODO Auto-generated method stub
-		for (int i = 0; i < rangers.size(); i++) {
-			rangers.get(i).performOrder();
+		if (rangers.size() != 0) {
+			for (int i = 0; i < rangers.size(); i++) {
+				rangers.get(i).performOrder();
+			}
 		}
 
 	}
