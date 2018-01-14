@@ -108,7 +108,11 @@ public class Player {
             } //end of counting and classifying units
             
             //example of sending an order to a manager, who will handle the implementation
-            if(gc.round()==740){
+            if(gc.round()==20){
+            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 5,5));
+            }
+            
+            if(gc.round()==730){
             	//System.out.println("Player order given");
             	//workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             	System.out.println("Order 1 random factory built");
