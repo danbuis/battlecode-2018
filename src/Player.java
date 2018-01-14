@@ -25,6 +25,9 @@ public class Player {
 	private static List<Unit> blueprintList=new ArrayList<Unit>();
 
 	private static WorkerManager workerManager;
+	private static FactoryManager factoryManager;
+	
+	private static int targetWorkerPopulation=0;
 	
 	
     public static void main(String[] args) {
@@ -40,11 +43,14 @@ public class Player {
         // Connect to the manager, starting the game
         GameController gc = new GameController();
         
-        //initialize unit managers
-        workerManager = new WorkerManager(gc, workerList, blueprintList);
-        
         //initializing player
         initPlayer(gc);
+        
+        //initialize unit managers
+        workerManager = new WorkerManager(gc, workerList, blueprintList, targetWorkerPopulation);
+        factoryManager = new FactoryManager(gc, workerList, rangerList, mageList, healerList, knightList, factoryList);
+        
+
 
         while (true) {
             System.out.println("Current round: "+gc.round());
@@ -65,15 +71,12 @@ public class Player {
             for (int i = 0; i < units.size(); i++) {
                 Unit unit = units.get(i);
                 
-                /* REMOVE LATER
-                if(gc.round()==1){
-                	basicBotMaps.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 10,5));
+                //gotta check if the basicBotMaps has these units yet
+                if(!basicBotMaps.containsKey(unit.id())){
+                	//looks like it doesn't, better add it!
+                	addUnitToBotMap(unit, gc);
                 }
-                
-                if(gc.round()==300){
-                	basicBotMaps.get(unit.id()).setTargetLocation(new MapLocation(Planet.Earth, 0,0));
-                }*/
-                
+                               
                 //sort units by type into the now empty lists
                 UnitType type = unit.unitType();
                 switch(type){
@@ -108,32 +111,11 @@ public class Player {
             } //end of counting and classifying units
             
             //example of sending an order to a manager, who will handle the implementation
-            if(gc.round()==20){
+            if(gc.round()==730){
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             }
             
-            if(gc.round()==730){
-            	//System.out.println("Player order given");
-            	//workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
-            	System.out.println("Order 1 random factory built");
-            	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
-            }
-            /*
-            if(gc.round()==60 && gc.planet()==Planet.Earth){
-            	System.out.println("Ordering a factory built at 12,5");
-            	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 12,5));
-            }
             
-            if(gc.round()==250){
-            	System.out.println("Player order given");
-            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 0,0));
-            }
-            
-            if(gc.round()==745){
-            	for(FactoryBot factory : factoryList){
-            		System.out.println("Factory "+factory.unitID+" has a health of "+factory.thisUnit.health());
-            	}
-            }*/
             
             System.out.println("calling workerManager move all units");
             workerManager.eachTurnMoveAllUnits();
@@ -143,7 +125,41 @@ public class Player {
         }
     }//end main
     
-    private static void initPlayer(GameController gc){
+    private static void addUnitToBotMap(Unit unit, GameController gc) {
+    	switch(unit.unitType()){
+        case Factory:
+        	 FactoryBot factBot = new FactoryBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), factBot);
+        	break;
+        case Healer:
+        	 HealerBot healBot = new HealerBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), healBot);
+        	break;
+        case Knight:
+        	 KnightBot knightBot = new KnightBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), knightBot);
+        	break;
+        case Mage:
+        	 MageBot mageBot = new MageBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), mageBot);
+        	break;
+        case Ranger:
+        	 RangerBot rangeBot = new RangerBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), rangeBot);
+        	break;
+        case Rocket:
+        	 RocketBot rockBot = new RocketBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), rockBot);
+        	break;
+        case Worker:
+        	 WorkerBot workBot = new WorkerBot(gc, unit.id());
+        	 basicBotMaps.put(unit.id(), workBot);
+        	 break;
+    	}
+		
+	}
+
+	private static void initPlayer(GameController gc){
     	System.out.println("Initializing");
     	
     	//initialize starting workers extended bot objects
@@ -155,6 +171,11 @@ public class Player {
             //                  key        value
             basicBotMaps.put(unit.id(), startingWorker);
             System.out.println("added unit to NavigationManager map");
+            
+            //initialize target worker populations
+            if(gc.planet()==Planet.Earth){
+            	targetWorkerPopulation=10;
+            }else targetWorkerPopulation=4;
         }
         
         

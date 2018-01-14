@@ -9,13 +9,15 @@ public class WorkerManager implements UnitManagersInterface{
 	public List<WorkerBot> workers;
 	private List<Unit> blueprintList = new ArrayList<Unit>();
 	private int distanceToHelpBuild=9;
+	private int targetWorkerPopulation;
 	
 	private boolean debug=true;
 
-	public WorkerManager(GameController gc, List<WorkerBot> workerList, List<Unit> blueprintList) {
+	public WorkerManager(GameController gc, List<WorkerBot> workerList, List<Unit> blueprintList, int targetWorkerPopulation) {
 		this.gc=gc;
 		this.workers = workerList;
 		this.blueprintList=blueprintList;
+		this.targetWorkerPopulation=targetWorkerPopulation;
 	}
 
 
@@ -75,6 +77,12 @@ public class WorkerManager implements UnitManagersInterface{
 				System.out.println(worker==null);
 				System.out.println(worker.orderStack.size()+" orders");
 			}
+			
+			//replicate workers to population
+			if(workers.size()<targetWorkerPopulation){
+				attemptReplication(worker);
+			}
+			
 			if(worker.orderStack.size()!=0 && worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID)){
 				worker.navigate(gc.unit(worker.unitID));
 				worker.activate();
@@ -82,7 +90,22 @@ public class WorkerManager implements UnitManagersInterface{
 		}//end for each worker
 	}
 	
-	
+	/**
+	 * basic method to replicate workers.  A brute force method to boost the population to 
+	 * levels determinedin Player.java.
+	 * @param workerBot
+	 */
+	private void attemptReplication(WorkerBot workerBot) {
+		int workerID = workerBot.unitID;
+		for(Direction dir : Direction.values()){
+			if(gc.canReplicate(workerID, dir)){
+				gc.replicate(workerID, dir);
+				return;
+			}
+		}
+	}
+
+
 	/**
 	 * use this one when you don't care where a structure gets built.  Has an O(N^2)
 	 * loop where it checks all workers and all directions until it is successful.
@@ -122,7 +145,7 @@ public class WorkerManager implements UnitManagersInterface{
 	public void issueOrderBlueprintStructureAtLocation(UnitType type, MapLocation location){
 		WorkerBot closestWorker=null;
 		long distance = 1000000000; //arbitrary large number
-		if(workers.size()!=0){ //what if we don't have any workers?  throws exception down in the final if/else.
+		if(!workers.isEmpty()){ //what if we don't have any workers?  throws exception down in the final if/else.
 			//find closest
 			for(WorkerBot worker: workers){
 				long distanceToBlueprintTarget = gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location);
@@ -147,6 +170,13 @@ public class WorkerManager implements UnitManagersInterface{
 			}
 					
 		}
+	
+	/**
+	 * use this one to have all workers work on a structure at a location.  They will arrive and see it being
+	 * built and pitch in.  Once it is built the blueprint order will pop off the stack.
+	 * @param type
+	 * @param location
+	 */
 	public void issueOrderAllBlueprintStructureAtLocation(UnitType type, MapLocation location){
 		if(!workers.isEmpty()){
 			for(WorkerBot worker:workers){
@@ -160,5 +190,13 @@ public class WorkerManager implements UnitManagersInterface{
 	}
 
 
+	public int getTargetWorkerPopulation() {
+		return targetWorkerPopulation;
+	}
+
+
+	public void setTargetWorkerPopulation(int targetWorkerPopulation) {
+		this.targetWorkerPopulation = targetWorkerPopulation;
+	}
 
 }

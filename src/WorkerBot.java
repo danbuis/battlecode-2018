@@ -38,6 +38,12 @@ public class WorkerBot extends BasicBot {
 				//pop blueprint and push a build
 				this.orderStack.pop();
 				this.orderStack.push(new Order(OrderType.BUILD, locationToBlueprint));
+			}else{
+				//else location not a valid blueprint location
+				if(debug) System.out.println ("This location is no longer valid to be blueprinted");
+				if(!this.orderStack.isEmpty() && (this.orderStack.peek().getType()==OrderType.BLUEPRINT_FACTORY ||this.orderStack.peek().getType()==OrderType.BLUEPRINT_ROCKET)){
+					orderStack.pop();
+				}
 			}
 		}
 		
