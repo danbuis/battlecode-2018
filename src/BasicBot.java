@@ -10,7 +10,7 @@ import bc.*;
  *
  */
 public class BasicBot {
-	private boolean debug = false;
+	private boolean debug = true;
 	
 	//need access to game controller for basically everything
 	public GameController gc;
