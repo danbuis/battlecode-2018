@@ -109,7 +109,7 @@ public class Player {
             
             //example of sending an order to a manager, who will handle the implementation
             if(gc.round()==20){
-            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 5,5));
+            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
             }
             
             if(gc.round()==730){

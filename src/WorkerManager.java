@@ -143,10 +143,22 @@ public class WorkerManager implements UnitManagersInterface{
 				closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, location ));
 			}else{
 				closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, location ));
+				}
+			}
+					
+		}
+	public void issueOrderAllBlueprintStructureAtLocation(UnitType type, MapLocation location){
+		if(!workers.isEmpty()){
+			for(WorkerBot worker:workers){
+				if (type.equals(UnitType.Rocket)){
+					worker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, location ));
+				}else{
+					worker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, location ));
+					}
 			}
 		}
-		
-		
 	}
+
+
 
 }
