@@ -114,22 +114,30 @@ public class WorkerManager implements UnitManagersInterface{
 	 */
 	public void issueOrderBlueprintStructureAtLocation(UnitType type, MapLocation location){
 		WorkerBot closestWorker=null;
-		long distance = 10000000;
-		
-		//find closest
-		for(WorkerBot worker: workers){
-			if(gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location)<distance){
-				closestWorker = worker;
-				distance = gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location);
+		long distance = 1000000000; //arbitrary large number
+		if(workers.size()!=0){ //what if we don't have any workers?  throws exception down in the final if/else.
+			//find closest
+			for(WorkerBot worker: workers){
+				long distanceToBlueprintTarget = gc.unit(worker.unitID).location().mapLocation().distanceSquaredTo(location);
+				
+				System.out.println("Worker "+worker.unitID+" is "+distanceToBlueprintTarget+" units away");
+				
+				if(distanceToBlueprintTarget <= distance){
+					System.out.println("new closest worker");
+					closestWorker = worker;
+					System.out.println("closestWorker null? "+closestWorker==null);
+					distance = distanceToBlueprintTarget;
+				}
+			}
+			System.out.println("is closestWorker null? "+closestWorker==null);
+			System.out.println("closest worker "+closestWorker);
+			System.out.println(closestWorker.orderStack);
+			if (type.equals(UnitType.Rocket)){
+				closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, location ));
+			}else{
+				closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, location ));
 			}
 		}
-		
-		if (type.equals(UnitType.Rocket)){
-			closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_ROCKET, gc.unit(closestWorker.unitID).location().mapLocation()));
-		}else{
-			closestWorker.orderStack.push(new Order(OrderType.BLUEPRINT_FACTORY, gc.unit(closestWorker.unitID).location().mapLocation() ));
-		}
-		
 		
 		
 	}

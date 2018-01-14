@@ -115,7 +115,7 @@ public class Player {
             	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
             }
             
-            if(gc.round()==60){
+            if(gc.round()==60 && gc.planet()==Planet.Earth){
             	System.out.println("Ordering a factory built at 12,5");
             	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 12,5));
             }
@@ -123,6 +123,12 @@ public class Player {
             if(gc.round()==250){
             	System.out.println("Player order given");
             	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 0,0));
+            }
+            
+            if(gc.round()==745){
+            	for(FactoryBot factory : factoryList){
+            		System.out.println("Factory "+factory.unitID+" has a health of "+factory.thisUnit.health());
+            	}
             }
             
             System.out.println("calling workerManager move all units");
