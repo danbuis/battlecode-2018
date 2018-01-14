@@ -35,7 +35,9 @@ public class WorkerBot extends BasicBot {
 				gc.blueprint(unitID, type, dir);
 				//successfully blueprinted!
 				if(debug) System.out.println("Unit "+this.unitID+" placing a blueprint, order complete.");
+				//pop blueprint and push a build
 				this.orderStack.pop();
+				this.orderStack.push(new Order(OrderType.BUILD, locationToBlueprint));
 			}
 		}
 		
@@ -68,13 +70,13 @@ public class WorkerBot extends BasicBot {
 		System.out.println("Structure being built at "+unitAtLocation.health()+" health");
 		//makes sure there is something there, that it is on our team, and that it needs building
 		if(unitAtLocation!=null && unitAtLocation.team().equals(gc.unit(unitID).team())
-		   && unitAtLocation.structureIsBuilt()==1){
+		   && unitAtLocation.structureIsBuilt()==0){
 			
 			if(gc.canBuild(unitID, unitAtLocation.id())){
 				gc.build(unitID, unitAtLocation.id());
 				if(debug) System.out.println("Unit "+this.unitID+" building a structure at "+currentOrder.getLocation());
 			}
-		}else{ //if it doesn't exist or is complete or is on the other team get rid of the order
+		}else{ //if it doesn't exist or is complete or is on the other team, so get rid of the order
 			if(debug) System.out.println("Unit "+this.unitID+" build order complete");
 			this.orderStack.pop();
 		}

@@ -50,6 +50,7 @@ public class WorkerManager implements UnitManagersInterface{
 		if (debug){
 			System.out.println("top of eachTurnMoveAllUnits()");
 			System.out.println("moving "+workers.size()+" units");
+			System.out.println("number of blueprints on the field: "+blueprintList.size());
 		}
 		for(WorkerBot worker:workers){
 			if (debug) System.out.println("checking worker "+worker.unitID);
