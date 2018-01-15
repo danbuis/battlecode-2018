@@ -8,6 +8,7 @@ public class WorkerManager implements UnitManagersInterface{
 	public GameController gc;
 	public List<WorkerBot> workers;
 	private List<Unit> blueprintList = new ArrayList<Unit>();
+	public List<MapLocation> resourceList;
 	private int distanceToHelpBuild=9;
 	private int targetWorkerPopulation;
 	

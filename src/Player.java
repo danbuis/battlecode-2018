@@ -196,13 +196,35 @@ public class Player {
             basicBotMaps.put(unit.id(), startingWorker);
             System.out.println("added unit to NavigationManager map");
             
-            //initialize target worker populations
-            if(gc.planet()==Planet.Earth){
-            	targetWorkerPopulation=6;
-            }else targetWorkerPopulation=4;
+            
         }
         
+      //initialize target worker populations
+        if(gc.planet()==Planet.Earth){
+        	targetWorkerPopulation=6;
+        }else targetWorkerPopulation=4;
         
+        workerManager.resourceList=initResources(gc);
     	
     }
+
+	private static List<MapLocation> initResources(GameController gc) {
+		List<MapLocation> returnList = new ArrayList<MapLocation>();
+		
+		PlanetMap map = gc.startingMap(gc.planet());
+		long height = map.getHeight();
+		long width = map.getWidth();
+		MapLocation test;
+		
+		for(int x=0; x==width; x++){
+			for (int y=0; y==height; y++){
+				test = new MapLocation(gc.planet(), x ,y);
+				if(map.initialKarboniteAt(test)>0){
+					returnList.add(test);
+				}
+			}//end y loop
+		}//end x loop
+		
+		return returnList;
+	}
 }
