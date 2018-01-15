@@ -27,8 +27,11 @@ public class Player {
 	private static WorkerManager workerManager;
 	private static FactoryManager factoryManager;
 	private static ResearchManager researchManager = new ResearchManager();
+	private static RangerManager rangerManager;
 	
 	private static int targetWorkerPopulation=0;
+
+
 	
 	
     public static void main(String[] args) {
@@ -50,6 +53,7 @@ public class Player {
         //initialize unit managers
         workerManager = new WorkerManager(gc, workerList, blueprintList, targetWorkerPopulation);
         factoryManager = new FactoryManager(gc, workerList, rangerList, mageList, healerList, knightList, factoryList);
+        rangerManager = new RangerManager(rangerList);
         
 
 
@@ -112,19 +116,40 @@ public class Player {
             } //end of counting and classifying units
             
             //example of sending an order to a manager, who will handle the implementation
-            if(gc.round()==730){
-            	workerManager.issueOrderMoveAllUnits(new MapLocation(Planet.Earth, 10,5));
+            if(gc.round()==1){
+            	workerManager.issueOrderBlueprintStructure(UnitType.Factory);
+            }
+            
+            if(gc.round()==50){
+            	workerManager.issueOrderBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 10,5));
+            }
+            
+            if(gc.round()==650){
+            	workerManager.issueOrderAllBlueprintStructureAtLocation(UnitType.Factory, new MapLocation(Planet.Earth, 10,18));
             }
 
-            System.out.println("calling workerManager move all units");
-            workerManager.eachTurnMoveAllUnits();
+            iterateEachTurn();
+         
             
             // Submit the actions we've done, and wait for our next turn.
             gc.nextTurn();
         }
     }//end main
     
-    private static void addUnitToBotMap(Unit unit, GameController gc) {
+    private static void iterateEachTurn() {
+    	
+    	   System.out.println("calling workerManager move all units");
+           workerManager.eachTurnMoveAllUnits();
+           
+           System.out.println("calling rangerManager move all units");
+           rangerManager.eachTurnMoveAllUnits();
+           
+           System.out.println("calling factoryManager build units");
+           factoryManager.eachTurnBuildUnits();
+		
+	}
+
+	private static void addUnitToBotMap(Unit unit, GameController gc) {
     	switch(unit.unitType()){
         case Factory:
         	 FactoryBot factBot = new FactoryBot(gc, unit.id());
@@ -173,7 +198,7 @@ public class Player {
             
             //initialize target worker populations
             if(gc.planet()==Planet.Earth){
-            	targetWorkerPopulation=10;
+            	targetWorkerPopulation=6;
             }else targetWorkerPopulation=4;
         }
         

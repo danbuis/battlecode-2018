@@ -115,7 +115,7 @@ public class ResearchManager {
 		 * completed. If for example we only wanted worker1 to be done and it was
 		 * already finished it would not add worker2 to the queue.
 		 */
-		private ArrayList<UnitType> queue; // workhorse of the class.
+		private ArrayList<UnitType> queue = new ArrayList<UnitType>();; // workhorse of the class.
 		private boolean includingDependencies = false;
 		private int tempIndex = 0; //current position in the research queue
 

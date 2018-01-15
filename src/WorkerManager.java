@@ -63,7 +63,7 @@ public class WorkerManager implements UnitManagersInterface{
 				long distanceToBlueprint=gc.unit(worker.unitID).location().mapLocation()
 						.distanceSquaredTo(blueprint.location().mapLocation());
 				if (debug) System.out.println("that blueprint is "+distanceToBlueprint+" away");
-				if(worker.orderStack.peek().getType()!=OrderType.BUILD && distanceToBlueprint<=distanceToHelpBuild){
+				if((!worker.orderStack.isEmpty()) && worker.orderStack.peek().getType()!=OrderType.BUILD && distanceToBlueprint<=distanceToHelpBuild){
 					//if close enough to come help issue a build order
 					if(debug) System.out.println("pushing a build order to unit "+worker.unitID);
 					worker.orderStack.push(new Order(OrderType.BUILD, blueprint.location().mapLocation()));
@@ -78,21 +78,23 @@ public class WorkerManager implements UnitManagersInterface{
 				System.out.println(worker.orderStack.size()+" orders");
 			}
 			
-			//replicate workers to population
-			if(workers.size()<targetWorkerPopulation){
-				attemptReplication(worker);
-			}
+		
 			
 			if(worker.orderStack.size()!=0 && worker.orderStack.peek().getLocation()!=null && gc.isMoveReady(worker.unitID)){
 				worker.navigate(gc.unit(worker.unitID));
 				worker.activate();
 				}
+			
+			//replicate workers to population
+			if(workers.size()<targetWorkerPopulation){
+				attemptReplication(worker);
+			}
 		}//end for each worker
 	}
 	
 	/**
 	 * basic method to replicate workers.  A brute force method to boost the population to 
-	 * levels determinedin Player.java.
+	 * levels determined in Player.java.
 	 * @param workerBot
 	 */
 	private void attemptReplication(WorkerBot workerBot) {
